@@ -2,9 +2,19 @@
 
 ## Extension Web Firefox
 
+### Comment tester ?
+
+1. Récupéré l'[archive des sources](https://github.com/Condutiarii/compagnon-casus/archive/refs/heads/master.zip) et la décompresser dans le répertoire de votre choix
+2. Ouvrir la page de debug sur firefox en tapant **about:debugging**
+3. Se rendre sur la section **Ce Firefox** (menu de gauche)
+4. Cliquer sur le bouton **Charger un module complémentaire temporaire** en haut de cette page (section **Extensions temporaires**)
+5. Lorsque la boîte de dialogue d'ouverture de fichier apparaît, trouver le fichier manifest.json compris dans l'archive
+
+Vous pouvez désormais tester l'extension tant que vous ne fermez pas votre navigateur.
+
 ### Fonctionnalités
 
-Il est nécessaire d'avoir une session soit ouverte sur le site [CasusNo](https://www.casusno.fr/)
+Il est nécessaire d'avoir une session ouverte sur le site [CasusNo](https://www.casusno.fr/) pour pleinement exploiter l'extension
 
 #### Ouverture d'un onglet
 
@@ -34,13 +44,3 @@ Type d'affichage de la thématique ciblée :
    3. Coloration du titre : Seule la couleur du titre est modifiée (privilégier les tons foncés)
 
 Une fois enregistrées, la page des *messages non lus* sera traitée selon ces paramètres.
-
-### Comment tester ?
-
-1. Récupéré l'[archive des sources](https://github.com/Condutiarii/compagnon-casus/archive/refs/heads/master.zip) et la décompresser dans le répertoire de votre choix
-2. Ouvrir la page de debug sur firefox en tapant **about:debugging**
-3. Se rendre sur la section **Ce Firefox** (menu de gauche)
-4. Cliquer sur le bouton **Charger un module complémentaire temporaire** en haut de cette page (section **Extensions temporaires**)
-5. Lorsque la boîte de dialogue d'ouverture de fichier apparaît, trouver le fichier manifest.json compris dans l'archive
-
-Vous pouvez désormais tester l'extension tant que vous ne fermez pas votre navigateur.
