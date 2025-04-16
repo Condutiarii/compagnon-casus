@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="options.css"/>
+  <meta name="color-scheme" content="dark light">
+  <title>Options</title>
+</head>
+
+<body>
+<div>
+  <div id="refresh">
+    <h3>Badge des notifications</h3>
+    <label for="refreshRate">Période de rafraîchissement 5 minutes</label>
+    <input type="range" id="refreshRate" min="1" max="60">
+  </div>
+  <div id="sections">
+    <h3>Préférences selon la thématique</h3>
+  </div>
+  <div id="actions">
+    <button id="reset">Réinitialiser</button>
+    <button id="save" class="primary">Enregistrer</button>
+    <div id="notification" class="hidden primary"></div>
+  </div>
+</div>
+<script src="options.js"></script>
+</body>
+
+</html>

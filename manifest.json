@@ -1,0 +1,43 @@
+{
+  "manifest_version": 2,
+  "name": "Compagnon CasusNo",
+  "version": "0.2",
+  "description": "Compagnon CasusNo proposant des outils d'amélioration de l'interface",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "casusno-companion@condutiarii.fr",
+      "strict_min_version": "72"
+    }
+  },
+  "icons": {
+    "48": "icons/icon.svg",
+    "96": "icons/icon.svg"
+  },
+  "permissions": [
+    "https://www.casusno.fr/*",
+    "storage",
+    "tabs",
+    "alarms"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "browser_style": true
+  },
+  "browser_action": {
+    "default_icon": "icons/icon.svg",
+    "default_title": "Compagnon CasusNo"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://www.casusno.fr/search.php?*search_id=unreadposts*"
+      ],
+      "js": [
+        "script.js"
+      ]
+    }
+  ]
+}
