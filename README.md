@@ -25,17 +25,21 @@ Si aucune session n'est ouverte, le site redirige vers la page de connexion.
 #### Surveillance des notifications
 
 L'icône de l'extension affiche un badge qui permet de connaître le nombre de notifications sur votre compte.
+
 ![connecté](/images/notification.png)
 
 Si aucune session n'est ouverte le badge est de couleur grise avec un X blanc indiquant la déconnexion.
+
 ![deconnecté](/images/disconnect.png)
 
 La page d'options permet de paramétrer la fréquence du rafraichissement du badge en minutes. Par défaut sur 5 mn.
+
 ![frequence](/images/time_options.png)
 
 #### Coloration des sujets souhaités
 
 La page d'options récupère les principales thématiques du site CasusNo et propose sur chacun d'eux une manière de modifier leur apparence sur la page des *messages non lus*
+
 ![options](/images/options.png)
 
 Type d'affichage de la thématique ciblée :
@@ -48,5 +52,6 @@ Type d'affichage de la thématique ciblée :
    3. Coloration du titre : Seule la couleur du titre est modifiée (privilégier les tons foncés)
 
 Une fois enregistrées, la page des *messages non lus* sera traitée selon ces paramètres.
+
 ![resultats](/images/results.png)
 
