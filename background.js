@@ -77,10 +77,10 @@ class OnlineTracker {
     // Premier chargement
     this.refresh().catch(console.error);
 
+
     browser.storage.sync.get().then(preferences => {
       // Mise à jour périodique
-      const refreshRate = preferences.refreshRate ?? 5;
-      browser.alarms.create('autoRefresh', { periodInMinutes: refreshRate });
+      this.createOrUpdateAlarm(preferences.refreshRate ?? 5);
       browser.alarms.onAlarm.addListener((alarm) => {
         if (alarm.name === 'autoRefresh') {
           this.refresh().catch(console.error);
@@ -100,6 +100,20 @@ class OnlineTracker {
         this.refresh().catch(console.error);
       }
     });
+
+    // Prends en compte la modification de la fréquence de rafraichissement du badge de notifications
+    browser.storage.sync.onChanged.addListener((refreshRate) => {
+        this.createOrUpdateAlarm(refreshRate.refreshRate.newValue);
+    });
+  }
+
+  /**
+   * Mise à jour de l'alarme
+   * @param {int} refreshRate
+   */
+  createOrUpdateAlarm(refreshRate) {
+    browser.alarms.clear('autoRefresh').catch(console.error);
+    browser.alarms.create('autoRefresh', { periodInMinutes: refreshRate });
   }
 }
 
