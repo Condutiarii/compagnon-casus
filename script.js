@@ -91,13 +91,13 @@ class PreferenceStyler {
         const className = this.addClass(topic, mode, color);
         switch (mode) {
           case 'full-line':
-            this.changeDisplay(item, icon, className, color);
+            this.changeDisplay(item, icon, className, color, 'fa-heart');
             break;
           case 'highlight-title':
-            this.changeDisplay(title, icon, className, color);
+            this.changeDisplay(title, icon, className, color, 'fa-heart');
             break;
           case 'color-title':
-            this.changeDisplay(title, icon, className, color, 'fa-exclamation-triangle');
+            this.changeDisplay(title, icon, className, color, 'fa-heart');
             break;
           default:
             title.classList.add(className);
@@ -115,13 +115,14 @@ class PreferenceStyler {
    * @param {string} [iconType=''] - The icon type to use.
    */
   changeDisplay(item, icon, className, color, iconType = '') {
-    const style = iconType === '' ? PreferenceStyler.SHADOW_STYLE : '';
-    icon.setAttribute('style', `color: ${color}; ${style}`);
-    item.classList.add(className);
-    if (iconType) {
+    let style = '';
+    if (iconType !== '') {
       icon.classList.remove(PreferenceStyler.ORIGINAL_ICON);
       icon.classList.add(iconType);
+      style = PreferenceStyler.SHADOW_STYLE;
     }
+    icon.setAttribute('style', `color: ${color}; ${style}`);
+    item.classList.add(className);
   }
 
   /**
