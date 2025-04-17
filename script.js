@@ -92,8 +92,6 @@ class PreferenceStyler {
         const className = this.addClass(topic, mode, color);
         switch (mode) {
           case 'full-line':
-            this.changeDisplay(item, icon, className, color, PreferenceStyler.SHADOW_STYLE);
-            break;
           case 'highlight-title':
             this.changeDisplay(title, icon, className, color, PreferenceStyler.SHADOW_STYLE);
             break;
