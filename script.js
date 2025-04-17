@@ -54,6 +54,7 @@ class PreferenceStyler {
   static THEME_SELECTOR = 'a:not([class])';
   static SHADOW_STYLE = 'text-shadow: 1px 0 0 rgba(0, 0, 0, 1),-1px 0 0 rgba(0, 0, 0, 1),0 1px 0 rgba(0, 0, 0, 1),0 -1px 0 rgba(0, 0, 0, 1);';
   static ORIGINAL_ICON = 'fa-file';
+  static HIGHLIGHT_ICON = 'fa-heart';
 
   /**
    * @param {object} preferences - User preferences.
@@ -91,13 +92,13 @@ class PreferenceStyler {
         const className = this.addClass(topic, mode, color);
         switch (mode) {
           case 'full-line':
-            this.changeDisplay(item, icon, className, color, 'fa-heart');
+            this.changeDisplay(item, icon, className, color, PreferenceStyler.SHADOW_STYLE);
             break;
           case 'highlight-title':
-            this.changeDisplay(title, icon, className, color, 'fa-heart');
+            this.changeDisplay(title, icon, className, color, PreferenceStyler.SHADOW_STYLE);
             break;
           case 'color-title':
-            this.changeDisplay(title, icon, className, color, 'fa-heart');
+            this.changeDisplay(title, icon, className, color);
             break;
           default:
             title.classList.add(className);
@@ -112,16 +113,11 @@ class PreferenceStyler {
    * @param {Element} icon - The icon to style.
    * @param {string} className - The CSS class name to add.
    * @param {string} color - The color to apply.
-   * @param {string} [iconType=''] - The icon type to use.
+   * @param {string} [shadow=''] - The icon type to use.
    */
-  changeDisplay(item, icon, className, color, iconType = '') {
-    let style = '';
-    if (iconType !== '') {
-      icon.classList.remove(PreferenceStyler.ORIGINAL_ICON);
-      icon.classList.add(iconType);
-      style = PreferenceStyler.SHADOW_STYLE;
-    }
-    icon.setAttribute('style', `color: ${color}; ${style}`);
+  changeDisplay(item, icon, className, color, shadow = '') {
+    icon.classList.replace(PreferenceStyler.ORIGINAL_ICON, PreferenceStyler.HIGHLIGHT_ICON);
+    icon.setAttribute('style', `color: ${color}; ${shadow}`);
     item.classList.add(className);
   }
 
