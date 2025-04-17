@@ -10,6 +10,17 @@ class StyleManager {
   constructor(cssRules = []) {
     this.cssRules = cssRules;
     this.styleElement = null;
+    this.injectFontAwesomeCSS();
+  }
+
+  /**
+   * Inserts CSS stylesheet
+   */
+  injectFontAwesomeCSS() {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
+    document.head.appendChild(link);
   }
 
   /**
@@ -49,19 +60,18 @@ class PreferenceStyler {
   static CONFIG = {
     CSS: {
       BASE: '.casus-no-post { opacity: 0.33; }',
-      SHADOW: 'text-shadow: 1px 0 0 rgba(0, 0, 0, 1),-1px 0 0 rgba(0, 0, 0, 1),0 1px 0 rgba(0, 0, 0, 1),0 -1px 0 rgba(0, 0, 0, 1);'
+      SHADOW: 'text-shadow: 1px 0 0 #000,-1px 0 0 #000,0 1px 0 #000,0 -1px 0 #000;',
     },
     SELECTOR: {
       LINE: 'dl.row-item',
       BOX: '.responsive-hide.left-box',
       ICON: 'i.icon',
       TOPIC: '.topictitle',
-      THEME: 'a:not([class])'
+      THEME: 'a:not([class])',
     },
     ICON: {
       ORIGINAL: 'fa-file',
-      HIGHLIGHT: 'fa-heart'
-    }
+    },
   };
 
   /**
@@ -88,10 +98,11 @@ class PreferenceStyler {
       if (!thematic) {
         return;
       }
-      const icon = item.querySelector(PreferenceStyler.CONFIG.SELECTOR.ICON);
+      const unreadIcon = item.querySelector(PreferenceStyler.CONFIG.SELECTOR.ICON);
       const themeName = thematic.textContent.trim();
       const topic = this.preferences.topics?.[themeName];
       const mode = this.preferences.modes?.[themeName];
+      const icon = this.preferences.icons?.[themeName];
       const color = this.preferences.colors?.[themeName];
 
       if (topic === 'hidden') {
@@ -100,18 +111,22 @@ class PreferenceStyler {
         const className = this.addClass(topic, mode, color);
         switch (mode) {
           case 'full-line':
-            this.changeDisplay(item, icon, className, color, PreferenceStyler.CONFIG.CSS.SHADOW);
+            this.changeDisplay(item, unreadIcon, className, color, PreferenceStyler.CONFIG.CSS.SHADOW);
             break;
           case 'highlight-title':
-            this.changeDisplay(title, icon, className, color, PreferenceStyler.CONFIG.CSS.SHADOW);
+            this.changeDisplay(title, unreadIcon, className, color, PreferenceStyler.CONFIG.CSS.SHADOW);
             break;
           case 'color-title':
-            this.changeDisplay(title, icon, className, color);
+            this.changeDisplay(title, unreadIcon, className, color);
             break;
           default:
             title.classList.add(className);
         }
       }
+      if (icon) {
+        unreadIcon.classList.replace(PreferenceStyler.CONFIG.ICON.ORIGINAL, icon);
+      }
+      unreadIcon.classList.replace('icon-md', 'icon-lg');
     });
   }
 
@@ -124,7 +139,6 @@ class PreferenceStyler {
    * @param {string} [shadow=''] - The shadow style to apply.
    */
   changeDisplay(item, icon, className, color, shadow = '') {
-    icon.classList.replace(PreferenceStyler.CONFIG.ICON.ORIGINAL, PreferenceStyler.CONFIG.ICON.HIGHLIGHT);
     icon.setAttribute('style', `color: ${color}; ${shadow}`);
     item.classList.add(className);
   }
@@ -156,6 +170,7 @@ class DisplayManager {
   async apply() {
     try {
       const preferences = await browser.storage.sync.get();
+      console.log(preferences);
       const styler = new PreferenceStyler(preferences);
       styler.applyStyles();
 

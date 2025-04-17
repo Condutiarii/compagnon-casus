@@ -12,7 +12,9 @@
     height: 1.7em;
   }
   input[type=color] {
+    border: none;
     height: 1.7em;
+    width: 1.7em;
   }
   label {
     font-weight: bold;

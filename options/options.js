@@ -16,6 +16,18 @@ class TopicManager {
     'highlight-title': 'Surlignage du titre',
     'color-title': 'Coloration du titre',
   };
+  static ICON_OPTION = {
+    'fa-file': 'Original',
+    'fa-dice': '2D6',
+    'fa-dice-d20': 'D20',
+    'fa-dice-d6': 'D6',
+    'fa-dice-one': '1 sur D6',
+    'fa-dice-two': '2 sur D6',
+    'fa-dice-three': '3 sur D6',
+    'fa-dice-four': '4 sur D6',
+    'fa-dice-five': '5 sur D6',
+    'fa-dice-six': '6 sur D6',
+  };
 
   /**
    * Creates a container for a given topic.
@@ -25,16 +37,18 @@ class TopicManager {
    */
   create(sectionName, preferences) {
     const topic = preferences.topics?.[sectionName] || 'visible';
+    const icon = preferences.icons?.[sectionName] || 'fa-file';
     const color = preferences.colors?.[sectionName] || TopicManager.DEFAULT_COLOR;
     const mode = preferences.modes?.[sectionName] || 'full-line';
 
     const displayElement = this.createDisplayElement(sectionName, topic);
+    const iconElement = this.createIconElement(sectionName, topic, icon);
     const modeElement = this.createModeElement(sectionName, topic, mode);
     const colorElement = this.createColorElement(sectionName, topic, color);
     const topicElement = this.createTopicElement(sectionName);
 
     const container = document.createElement('div');
-    container.append(displayElement, modeElement, colorElement, topicElement);
+    container.append(displayElement, iconElement, modeElement, colorElement, topicElement);
 
     this.setupSelectEventListener(displayElement, modeElement, colorElement);
 
@@ -63,6 +77,29 @@ class TopicManager {
   }
 
   /**
+   * Creates a selection element for icons.
+   * @param {string} sectionName - The name of the section.
+   * @param {string} topic - The selected topic.
+   * @param {string} selectedIcon - The selected icon.
+   * @returns {HTMLSelectElement} - The selection element.
+   */
+  createIconElement(sectionName, topic, selectedIcon) {
+    const select = document.createElement('select');
+    select.dataset.selectId = sectionName;
+    select.dataset.target = 'icon';
+
+    Object.entries(TopicManager.ICON_OPTION).forEach(([value, text]) => {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = text;
+      option.selected = value === selectedIcon;
+      select.add(option);
+    });
+
+    return select;
+  }
+
+  /**
    * Creates a selection element for modes.
    * @param {string} sectionName - The name of the section.
    * @param {string} topic - The selected topic.
@@ -72,6 +109,7 @@ class TopicManager {
   createModeElement(sectionName, topic, selectedMode) {
     const select = document.createElement('select');
     select.dataset.selectId = sectionName;
+    select.dataset.target = 'mode';
     select.disabled = topic !== 'highlight';
 
     Object.entries(TopicManager.MODE_OPTION).forEach(([value, text]) => {
@@ -236,10 +274,10 @@ class PreferencesManager {
 
   /**
    * Collects user preferences from the UI.
-   * @returns {{topics: {}, colors: {}, modes: {}, refreshRate: number}} - The collected preferences.
+   * @returns {{topics: {}, colors: {}, modes: {}, icons: {}, refreshRate: number}} - The collected preferences.
    */
   collectPreferences() {
-    const preferences = { topics: {}, colors: {}, modes: {}, refreshRate: 5 };
+    const preferences = { topics: {}, colors: {}, modes: {}, icons: {}, refreshRate: 5 };
 
     document.querySelectorAll('select').forEach(select => {
       preferences.topics[select.id] = select.value;
@@ -247,9 +285,11 @@ class PreferencesManager {
 
       if (select.value === 'highlight') {
         const color = document.querySelector(`input[type="color"][data-select-id="${select.id}"]`);
-        const mode = document.querySelector(`select[data-select-id="${select.id}"]`);
+        const mode = document.querySelector(`select[data-select-id="${select.id}"][data-target="mode"]`);
+        const icon = document.querySelector(`select[data-select-id="${select.id}"][data-target="icon"]`);
         preferences.colors[select.id] = color.value;
         preferences.modes[select.id] = mode.value;
+        preferences.icons[select.id] = icon.value;
       }
     });
 
