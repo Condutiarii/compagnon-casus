@@ -51,10 +51,10 @@ class OnlineTracker {
    * @param {string|null} count - Le nombre de notifications en ligne.
    */
   updateBadge(count) {
-    const text = count?.toString() || '?';
+    const text = count < 1 ? '' : count?.toString() || '?';
     const action = browser.browserAction;
 
-    const color = text === 'X' ? '#555' : '#f00';
+    const color = text === 'X' ? '#555' : '#d90000';
     action.setBadgeBackgroundColor({ color }).catch(console.error);
     action.setBadgeTextColor({ color: '#fff' }).catch(console.error);
     action.setBadgeText({ text }).catch(console.error);
