@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Classe pour gérer les topics.
+ * Class to manage topics.
  */
 class TopicManager {
   static DEFAULT_COLOR = '#1c1b22';
@@ -18,10 +18,10 @@ class TopicManager {
   };
 
   /**
-   * Crée un conteneur pour un topic donné.
-   * @param {string} sectionName - Le nom de la section.
-   * @param {object} preferences - Les préférences utilisateur.
-   * @returns {HTMLDivElement} - Le conteneur HTML.
+   * Creates a container for a given topic.
+   * @param {string} sectionName - The name of the section.
+   * @param {object} preferences - User preferences.
+   * @returns {HTMLDivElement} - The HTML container.
    */
   create(sectionName, preferences) {
     const topic = preferences.topics?.[sectionName] || 'visible';
@@ -42,10 +42,10 @@ class TopicManager {
   }
 
   /**
-   * Crée un élément de sélection pour afficher les options.
-   * @param {string} sectionName - Le nom de la section.
-   * @param {string} selectedTopic - Le topic sélectionné.
-   * @returns {HTMLSelectElement} - L'élément de sélection.
+   * Creates a selection element for display options.
+   * @param {string} sectionName - The name of the section.
+   * @param {string} selectedTopic - The selected topic.
+   * @returns {HTMLSelectElement} - The selection element.
    */
   createDisplayElement(sectionName, selectedTopic) {
     const select = document.createElement('select');
@@ -63,11 +63,11 @@ class TopicManager {
   }
 
   /**
-   * Crée un élément de sélection pour les modes.
-   * @param {string} sectionName - Le nom de la section.
-   * @param {string} topic - Le topic sélectionné.
-   * @param {string} selectedMode - Le mode sélectionné.
-   * @returns {HTMLSelectElement} - L'élément de sélection.
+   * Creates a selection element for modes.
+   * @param {string} sectionName - The name of the section.
+   * @param {string} topic - The selected topic.
+   * @param {string} selectedMode - The selected mode.
+   * @returns {HTMLSelectElement} - The selection element.
    */
   createModeElement(sectionName, topic, selectedMode) {
     const select = document.createElement('select');
@@ -86,11 +86,11 @@ class TopicManager {
   }
 
   /**
-   * Crée un élément pour la sélection de la couleur.
-   * @param {string} sectionName - Le nom de la section.
-   * @param {string} topic - Le topic sélectionné.
-   * @param {string} highlightColor - La couleur de surlignage.
-   * @returns {HTMLInputElement} - L'élément d'entrée de couleur.
+   * Creates an element for color selection.
+   * @param {string} sectionName - The name of the section.
+   * @param {string} topic - The selected topic.
+   * @param {string} highlightColor - The highlight color.
+   * @returns {HTMLInputElement} - The color input element.
    */
   createColorElement(sectionName, topic, highlightColor) {
     const colorInput = document.createElement('input');
@@ -104,9 +104,9 @@ class TopicManager {
   }
 
   /**
-   * Crée un élément pour afficher le nom du topic.
-   * @param {string} sectionName - Le nom de la section.
-   * @returns {HTMLLabelElement} - L'élément de label.
+   * Creates an element to display the topic name.
+   * @param {string} sectionName - The name of the section.
+   * @returns {HTMLLabelElement} - The label element.
    */
   createTopicElement(sectionName) {
     const label = document.createElement('label');
@@ -115,17 +115,17 @@ class TopicManager {
   }
 
   /**
-   * Configure les événements pour les éléments de sélection.
-   * @param {HTMLSelectElement} selectElement - L'élément de sélection.
-   * @param {HTMLSelectElement} modeElement - L'élément de sélection des modes.
-   * @param {HTMLInputElement} colorElement - L'élément d'entrée de couleur.
+   * Sets up event listeners for selection elements.
+   * @param {HTMLSelectElement} selectElement - The selection element.
+   * @param {HTMLSelectElement} modeElement - The mode selection element.
+   * @param {HTMLInputElement} colorElement - The color input element.
    */
   setupSelectEventListener(selectElement, modeElement, colorElement) {
     selectElement.addEventListener('change', () => {
       const selectedValue = selectElement.value || 'full-line';
 
       modeElement.disabled = selectedValue !== 'highlight';
-      modeElement.value = selectedValue !== 'highlight' ? 'full-line' : selectedValue;
+      modeElement.value = selectedValue !== 'highlight' ? 'full-line' : modeElement.value ?? 'full-line';
       colorElement.disabled = selectedValue !== 'highlight';
       colorElement.value = this.getColorValue(selectedValue, TopicManager.HIGHLIGHT_COLOR);
       colorElement.classList.toggle('is-visible', selectedValue === 'visible');
@@ -135,10 +135,10 @@ class TopicManager {
   }
 
   /**
-   * Obtient la valeur de la couleur en fonction du topic.
-   * @param {string} topic - Le topic sélectionné.
-   * @param {string} highlightColor - La couleur de surlignage.
-   * @returns {string} - La valeur de la couleur.
+   * Gets the color value based on the topic.
+   * @param {string} topic - The selected topic.
+   * @param {string} highlightColor - The highlight color.
+   * @returns {string} - The color value.
    */
   getColorValue(topic, highlightColor) {
     switch (topic) {
@@ -153,20 +153,20 @@ class TopicManager {
 }
 
 /**
- * Classe pour gérer les préférences utilisateur.
+ * Class to manage user preferences.
  */
 class PreferencesManager {
   static NOTIFICATION_DURATION = 2000;
 
   /**
-   * Constructeur de la classe PreferencesManager.
+   * Constructor for the PreferencesManager class.
    */
   constructor() {
     this.topicManager = new TopicManager();
   }
 
   /**
-   * Prépare les options en récupérant les données depuis le serveur.
+   * Prepares options by fetching data from the server.
    * @returns {Promise<void>}
    */
   async prepareOptions() {
@@ -180,7 +180,7 @@ class PreferencesManager {
 
       const time = preferences.refreshRate ?? 5;
       document.querySelector('#refreshRate').value = time;
-      document.querySelector('label[for=refreshRate]').textContent = `Période de rafraîchissement ${time} minutes`;
+      document.querySelector('label[for=refreshRate]').textContent = `Période de rafraichissement sur ${time} minutes`;
 
       doc.querySelectorAll('.forumtitle').forEach(title => {
         const sectionName = title.textContent.trim();
@@ -190,33 +190,33 @@ class PreferencesManager {
 
       this.setupEventListeners();
     } catch (error) {
-      console.error('Erreur lors de la récupération des sections :', error);
+      console.error('Error fetching sections:', error);
     }
   }
 
   /**
-   * Configure les événements pour les éléments de l'interface utilisateur.
+   * Sets up event listeners for UI elements.
    */
   setupEventListeners() {
     document.getElementById('refreshRate').addEventListener('input', (e) => {
-      document.querySelector('label[for=refreshRate]').textContent = `Période de rafraîchissement ${e.target.value} minutes`;
+      document.querySelector('label[for=refreshRate]').textContent = `Période de rafraichissement sur ${e.target.value} minutes`;
     });
 
     document.getElementById('save').addEventListener('click', async () => {
       try {
         const preferences = this.collectPreferences();
         await browser.storage.sync.set(preferences);
-        this.showNotification('Préférences enregistrées !');
+        this.showNotification('Preferences saved!');
 
         const tabs = await browser.tabs.query({ url: '*://www.casusno.fr/*' });
         tabs.forEach(tab => {
           browser.tabs.sendMessage(tab.id, { action: 'updatePreferences' })
-            .catch(error => console.error('Erreur lors de la sauvegarde des tabs :', error));
+            .catch(error => console.error('Error saving tabs:', error));
         });
 
-        this.showNotification('Préférences enregistrées.');
+        this.showNotification('Preferences saved.');
       } catch (error) {
-        console.error('Erreur lors de la sauvegarde des préférences :', error);
+        console.error('Error saving preferences:', error);
       }
     });
 
@@ -229,14 +229,14 @@ class PreferencesManager {
 
         window.location.reload();
       } catch (error) {
-        console.error('Erreur lors de la réinitialisation des préférences :', error);
+        console.error('Error resetting preferences:', error);
       }
     });
   }
 
   /**
-   * Collecte les préférences utilisateur depuis l'interface.
-   * @returns {{topics: {}, colors: {}, modes: {}, refreshRate: number}} - Les préférences collectées.
+   * Collects user preferences from the UI.
+   * @returns {{topics: {}, colors: {}, modes: {}, refreshRate: number}} - The collected preferences.
    */
   collectPreferences() {
     const preferences = { topics: {}, colors: {}, modes: {}, refreshRate: 5 };
@@ -257,8 +257,8 @@ class PreferencesManager {
   }
 
   /**
-   * Affiche une notification à l'utilisateur.
-   * @param {string} message - Le message à afficher.
+   * Displays a notification to the user.
+   * @param {string} message - The message to display.
    */
   showNotification(message) {
     const notificationElement = document.getElementById('notification');
@@ -272,7 +272,7 @@ class PreferencesManager {
   }
 }
 
-// Initialisation au chargement du DOM
+// Initialization when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   const preferencesManager = new PreferencesManager();
   preferencesManager.prepareOptions().catch(console.error);

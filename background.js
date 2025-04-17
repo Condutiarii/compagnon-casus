@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Classe pour suivre le nombre de notifications sur CasusNo.
+ * Class to track the number of notifications on CasusNo.
  */
 class OnlineTracker {
   static NOTIFICATION_SELECTOR = '#notification_list_button strong.badge';
@@ -9,35 +9,34 @@ class OnlineTracker {
   static UNREAD_POSTS_URL = 'https://www.casusno.fr/search.php?search_id=unreadposts';
 
   /**
-   * Constructeur de la classe OnlineTracker.
+   * Constructor for the OnlineTracker class.
    */
   constructor() {
     this.init();
   }
 
   /**
-   * Récupère le nombre de notifications depuis le site.
-   * @returns {Promise<string|null>} Le nombre de notifications ou null en cas d'erreur.
+   * Fetches the number of notifications from the site.
+   * @returns {Promise<string|null>} The number of notifications or null in case of an error.
    */
   async fetchOnlineNotifications() {
     try {
       const response = await fetch(OnlineTracker.CASUS_NO_URL);
       if (!response.ok) {
-        // noinspection ExceptionCaughtLocallyJS
-        throw new Error('Erreur réseau');
+        throw new Error('Network error');
       }
       const html = await response.text();
       return this.parseCount(html);
     } catch (error) {
-      console.error('Erreur lors de la récupération des notifications :', error);
+      console.error('Error fetching notifications:', error);
       return null;
     }
   }
 
   /**
-   * Analyse le HTML pour extraire le nombre de notifications en ligne.
-   * @param {string} html - Le contenu HTML de la page.
-   * @returns {string} Le nombre de notifications ou "X" si non trouvé.
+   * Parses the HTML to extract the number of online notifications.
+   * @param {string} html - The HTML content of the page.
+   * @returns {string} The number of notifications or "X" if not found.
    */
   parseCount(html) {
     const parser = new DOMParser();
@@ -47,8 +46,8 @@ class OnlineTracker {
   }
 
   /**
-   * Met à jour le badge de l'extension avec le nombre de notifications en ligne.
-   * @param {string|null} count - Le nombre de notifications en ligne.
+   * Updates the extension's badge with the number of online notifications.
+   * @param {string|null} count - The number of online notifications.
    */
   updateBadge(count) {
     const text = count < 1 ? '' : count?.toString() || '?';
@@ -61,7 +60,7 @@ class OnlineTracker {
   }
 
   /**
-   * Rafraîchit le nombre de notifications et met à jour le badge.
+   * Refreshes the number of notifications and updates the badge.
    */
   async refresh() {
     const count = await this.fetchOnlineNotifications();
@@ -71,15 +70,14 @@ class OnlineTracker {
   }
 
   /**
-   * Initialise l'extension en configurant les alarmes et les écouteurs d'événements.
+   * Initializes the extension by setting up alarms and event listeners.
    */
   init() {
-    // Premier chargement
+    // Initial load
     this.refresh().catch(console.error);
 
-
     browser.storage.sync.get().then(preferences => {
-      // Mise à jour périodique
+      // Periodic update
       this.createOrUpdateAlarm(preferences.refreshRate ?? 5);
       browser.alarms.onAlarm.addListener((alarm) => {
         if (alarm.name === 'autoRefresh') {
@@ -88,28 +86,30 @@ class OnlineTracker {
       });
     }).catch(console.error);
 
-    // Mise à jour manuelle au clic
+    // Manual update on click
     browser.browserAction.onClicked.addListener(() => {
       this.refresh().catch(console.error);
       browser.tabs.create({ url: OnlineTracker.UNREAD_POSTS_URL }).catch(console.error);
     });
 
-    // Écouter les mises à jour des onglets
+    // Listen for tab updates
     browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       if (changeInfo.status === 'complete' && tab.url.includes(OnlineTracker.CASUS_NO_URL)) {
         this.refresh().catch(console.error);
       }
     });
 
-    // Prends en compte la modification de la fréquence de rafraichissement du badge de notifications
-    browser.storage.sync.onChanged.addListener((refreshRate) => {
-        this.createOrUpdateAlarm(refreshRate.refreshRate.newValue);
+    // Handle changes to the refresh rate
+    browser.storage.sync.onChanged.addListener((changes) => {
+      if (changes.refreshRate) {
+        this.createOrUpdateAlarm(changes.refreshRate.newValue);
+      }
     });
   }
 
   /**
-   * Mise à jour de l'alarme
-   * @param {int} refreshRate
+   * Updates the alarm.
+   * @param {number} refreshRate - The refresh rate in minutes.
    */
   createOrUpdateAlarm(refreshRate) {
     browser.alarms.clear('autoRefresh').catch(console.error);
@@ -117,5 +117,5 @@ class OnlineTracker {
   }
 }
 
-// Initialisation de l'extension
+// Initialize the extension
 new OnlineTracker();

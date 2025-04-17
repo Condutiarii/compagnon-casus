@@ -1,20 +1,20 @@
 'use strict';
 
 /**
- * Gère l'insertion et la maintenance des règles CSS dynamiques.
+ * Manages the insertion and maintenance of dynamic CSS rules.
  */
 class StyleManager {
   /**
-   * @param {string[]} cssRules - Liste des règles CSS à insérer.
+   * @param {string[]} cssRules - List of CSS rules to insert.
    */
-  constructor(cssRules) {
+  constructor(cssRules = []) {
     this.cssRules = cssRules;
     this.styleElement = null;
   }
 
   /**
-   * Insère les règles CSS dans le document de façon encapsulée.
-   * Crée un style dédié pour éviter les conflits et garantir l'ordre d'insertion.
+   * Inserts CSS rules into the document in an encapsulated manner.
+   * Creates a dedicated style element to avoid conflicts and ensure the order of insertion.
    */
   insertCSSRules() {
     if (!this.styleElement) {
@@ -23,7 +23,7 @@ class StyleManager {
       document.head.appendChild(this.styleElement);
     }
     const sheet = this.styleElement.sheet;
-    // Nettoie d'abord les anciennes règles si besoin
+    // First, clear any existing rules if necessary
     while (sheet.cssRules.length) {
       sheet.deleteRule(0);
     }
@@ -33,8 +33,8 @@ class StyleManager {
   }
 
   /**
-   * Permet d'ajouter dynamiquement une règle CSS.
-   * @param {string} rule - La règle CSS à ajouter.
+   * Allows dynamically adding a CSS rule.
+   * @param {string} rule - The CSS rule to add.
    */
   addRule(rule) {
     this.cssRules.push(rule);
@@ -43,7 +43,7 @@ class StyleManager {
 }
 
 /**
- * Applique les préférences utilisateur sur les éléments du forum.
+ * Applies user preferences to forum elements.
  */
 class PreferenceStyler {
   static BASE_CSS = '.casus-no-post { opacity: 0.33; }';
@@ -56,7 +56,7 @@ class PreferenceStyler {
   static ORIGINAL_ICON = 'fa-file';
 
   /**
-   * @param {object} preferences - Préférences utilisateur.
+   * @param {object} preferences - User preferences.
    */
   constructor(preferences) {
     this.preferences = preferences;
@@ -66,7 +66,7 @@ class PreferenceStyler {
   }
 
   /**
-   * Applique les styles sur tous les éléments ciblés.
+   * Applies styles to all targeted elements.
    */
   applyStyles() {
     document.querySelectorAll(PreferenceStyler.LINE_SELECTOR).forEach(item => {
@@ -102,27 +102,22 @@ class PreferenceStyler {
           default:
             title.classList.add(className);
         }
-
       }
     });
   }
 
   /**
-   * Change l'affichage de la ligne du fil
-   * @param {Element} item
-   * @param {Element} icon
-   * @param {string} className
-   * @param {string} color
-   * @param {string} iconType
+   * Changes the display of the forum thread line.
+   * @param {Element} item - The element to style.
+   * @param {Element} icon - The icon to style.
+   * @param {string} className - The CSS class name to add.
+   * @param {string} color - The color to apply.
+   * @param {string} [iconType=''] - The icon type to use.
    */
   changeDisplay(item, icon, className, color, iconType = '') {
-    // Définir le style en fonction de iconType
     const style = iconType === '' ? PreferenceStyler.SHADOW_STYLE : '';
-    // Mettre à jour l'attribut style de l'icône
-    icon.setAttribute('style', `color:${color};${style}`);
-    // Ajouter la classe à l'élément
+    icon.setAttribute('style', `color: ${color}; ${style}`);
     item.classList.add(className);
-    // Si iconType est fourni, mettre à jour les classes de l'icône
     if (iconType) {
       icon.classList.remove(PreferenceStyler.ORIGINAL_ICON);
       icon.classList.add(iconType);
@@ -130,11 +125,11 @@ class PreferenceStyler {
   }
 
   /**
-   * Ajoute une classe CSS dynamique pour les éléments en surbrillance.
-   * @param {string} topic - Le type de topic (highlight, hidden).
-   * @param {string} mode - Le mode d'affichage (full-line, color-title).
-   * @param {string} color - La couleur à appliquer.
-   * @returns {string} - Le nom de la classe CSS ajoutée.
+   * Adds a dynamic CSS class for highlighted elements.
+   * @param {string} topic - The topic type (highlight, hidden).
+   * @param {string} mode - The display mode (full-line, color-title).
+   * @param {string} color - The color to apply.
+   * @returns {string} - The name of the added CSS class.
    */
   addClass(topic, mode, color) {
     const className = `casus-${mode}-${this.index++}`;
@@ -145,13 +140,13 @@ class PreferenceStyler {
 }
 
 /**
- * Orchestration de la gestion des préférences et de l'application des styles.
+ * Orchestrates the management of preferences and the application of styles.
  */
 class DisplayManager {
   constructor() {}
 
   /**
-   * Initialise l'application : insère le CSS et applique les préférences.
+   * Initializes the application: inserts CSS and applies preferences.
    */
   async apply() {
     try {
@@ -159,7 +154,7 @@ class DisplayManager {
       const styler = new PreferenceStyler(preferences);
       styler.applyStyles();
 
-      // Recharge les onglets ouverts si les préférences sont modifiées
+      // Reload open tabs if preferences are modified
       browser.runtime.onMessage.addListener((message) => {
         if (message.action === 'updatePreferences') {
           window.location.reload();
@@ -167,18 +162,18 @@ class DisplayManager {
         }
       });
     } catch (error) {
-      console.error('Erreur lors de l\'application des préférences :', error);
+      console.error('Error applying preferences:', error);
     }
   }
 
   /**
-   * Factory statique pour créer une instance.
-   * @returns {DisplayManager} - Une nouvelle instance de DisplayManager.
+   * Static factory to create an instance.
+   * @returns {DisplayManager} - A new instance of DisplayManager.
    */
   static create() {
     return new DisplayManager();
   }
 }
 
-// Applique les préférences
+// Apply preferences
 DisplayManager.create().apply().catch(console.error);
