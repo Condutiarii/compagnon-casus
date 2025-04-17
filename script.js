@@ -46,22 +46,30 @@ class StyleManager {
  * Applies user preferences to forum elements.
  */
 class PreferenceStyler {
-  static BASE_CSS = '.casus-no-post { opacity: 0.33; }';
-  static LINE_SELECTOR = 'dl.row-item';
-  static BOX_SELECTOR = '.responsive-hide.left-box';
-  static ICON_SELECTOR = 'i.icon';
-  static TOPIC_SELECTOR = '.topictitle';
-  static THEME_SELECTOR = 'a:not([class])';
-  static SHADOW_STYLE = 'text-shadow: 1px 0 0 rgba(0, 0, 0, 1),-1px 0 0 rgba(0, 0, 0, 1),0 1px 0 rgba(0, 0, 0, 1),0 -1px 0 rgba(0, 0, 0, 1);';
-  static ORIGINAL_ICON = 'fa-file';
-  static HIGHLIGHT_ICON = 'fa-heart';
+  static CONFIG = {
+    CSS: {
+      BASE: '.casus-no-post { opacity: 0.33; }',
+      SHADOW: 'text-shadow: 1px 0 0 rgba(0, 0, 0, 1),-1px 0 0 rgba(0, 0, 0, 1),0 1px 0 rgba(0, 0, 0, 1),0 -1px 0 rgba(0, 0, 0, 1);'
+    },
+    SELECTOR: {
+      LINE: 'dl.row-item',
+      BOX: '.responsive-hide.left-box',
+      ICON: 'i.icon',
+      TOPIC: '.topictitle',
+      THEME: 'a:not([class])'
+    },
+    ICON: {
+      ORIGINAL: 'fa-file',
+      HIGHLIGHT: 'fa-heart'
+    }
+  };
 
   /**
    * @param {object} preferences - User preferences.
    */
   constructor(preferences) {
     this.preferences = preferences;
-    this.styleManager = new StyleManager([PreferenceStyler.BASE_CSS]);
+    this.styleManager = new StyleManager([PreferenceStyler.CONFIG.CSS.BASE]);
     this.styleManager.insertCSSRules();
     this.index = 0;
   }
@@ -70,17 +78,17 @@ class PreferenceStyler {
    * Applies styles to all targeted elements.
    */
   applyStyles() {
-    document.querySelectorAll(PreferenceStyler.LINE_SELECTOR).forEach(item => {
-      const box = item.querySelector(PreferenceStyler.BOX_SELECTOR);
-      const title = item.querySelector(PreferenceStyler.TOPIC_SELECTOR);
+    document.querySelectorAll(PreferenceStyler.CONFIG.SELECTOR.LINE).forEach(item => {
+      const box = item.querySelector(PreferenceStyler.CONFIG.SELECTOR.BOX);
+      const title = item.querySelector(PreferenceStyler.CONFIG.SELECTOR.TOPIC);
       if (!box || !title) {
         return;
       }
-      const thematic = box.querySelector(PreferenceStyler.THEME_SELECTOR);
+      const thematic = box.querySelector(PreferenceStyler.CONFIG.SELECTOR.THEME);
       if (!thematic) {
         return;
       }
-      const icon = item.querySelector(PreferenceStyler.ICON_SELECTOR);
+      const icon = item.querySelector(PreferenceStyler.CONFIG.SELECTOR.ICON);
       const themeName = thematic.textContent.trim();
       const topic = this.preferences.topics?.[themeName];
       const mode = this.preferences.modes?.[themeName];
@@ -92,10 +100,10 @@ class PreferenceStyler {
         const className = this.addClass(topic, mode, color);
         switch (mode) {
           case 'full-line':
-            this.changeDisplay(item, icon, className, color, PreferenceStyler.SHADOW_STYLE);
+            this.changeDisplay(item, icon, className, color, PreferenceStyler.CONFIG.CSS.SHADOW);
             break;
           case 'highlight-title':
-            this.changeDisplay(title, icon, className, color, PreferenceStyler.SHADOW_STYLE);
+            this.changeDisplay(title, icon, className, color, PreferenceStyler.CONFIG.CSS.SHADOW);
             break;
           case 'color-title':
             this.changeDisplay(title, icon, className, color);
@@ -113,10 +121,10 @@ class PreferenceStyler {
    * @param {Element} icon - The icon to style.
    * @param {string} className - The CSS class name to add.
    * @param {string} color - The color to apply.
-   * @param {string} [shadow=''] - The icon type to use.
+   * @param {string} [shadow=''] - The shadow style to apply.
    */
   changeDisplay(item, icon, className, color, shadow = '') {
-    icon.classList.replace(PreferenceStyler.ORIGINAL_ICON, PreferenceStyler.HIGHLIGHT_ICON);
+    icon.classList.replace(PreferenceStyler.CONFIG.ICON.ORIGINAL, PreferenceStyler.CONFIG.ICON.HIGHLIGHT);
     icon.setAttribute('style', `color: ${color}; ${shadow}`);
     item.classList.add(className);
   }
