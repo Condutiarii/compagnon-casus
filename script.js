@@ -49,8 +49,11 @@ class PreferenceStyler {
   static BASE_CSS = '.casus-no-post { opacity: 0.33; }';
   static LINE_SELECTOR = 'dl.row-item';
   static BOX_SELECTOR = '.responsive-hide.left-box';
+  static ICON_SELECTOR = 'i.icon';
   static TOPIC_SELECTOR = '.topictitle';
   static THEME_SELECTOR = 'a:not([class])';
+  static SHADOW_STYLE = 'text-shadow: 1px 0 0 rgba(0, 0, 0, 1),-1px 0 0 rgba(0, 0, 0, 1),0 1px 0 rgba(0, 0, 0, 1),0 -1px 0 rgba(0, 0, 0, 1);';
+  static ORIGINAL_ICON = 'fa-file';
 
   /**
    * @param {object} preferences - Préférences utilisateur.
@@ -76,23 +79,54 @@ class PreferenceStyler {
       if (!thematic) {
         return;
       }
+      const icon = item.querySelector(PreferenceStyler.ICON_SELECTOR);
       const themeName = thematic.textContent.trim();
       const topic = this.preferences.topics?.[themeName];
       const mode = this.preferences.modes?.[themeName];
       const color = this.preferences.colors?.[themeName];
+
       if (topic === 'hidden') {
         item.classList.add('casus-no-post');
       } else if (topic === 'highlight') {
         const className = this.addClass(topic, mode, color);
         switch (mode) {
           case 'full-line':
-            item.classList.add(className);
+            this.changeDisplay(item, icon, className, color);
+            break;
+          case 'highlight-title':
+            this.changeDisplay(title, icon, className, color);
+            break;
+          case 'color-title':
+            this.changeDisplay(title, icon, className, color, 'fa-exclamation-triangle');
             break;
           default:
             title.classList.add(className);
         }
+
       }
     });
+  }
+
+  /**
+   * Change l'affichage de la ligne du fil
+   * @param {Element} item
+   * @param {Element} icon
+   * @param {string} className
+   * @param {string} color
+   * @param {string} iconType
+   */
+  changeDisplay(item, icon, className, color, iconType = '') {
+    // Définir le style en fonction de iconType
+    const style = iconType === '' ? PreferenceStyler.SHADOW_STYLE : '';
+    // Mettre à jour l'attribut style de l'icône
+    icon.setAttribute('style', `color:${color};${style}`);
+    // Ajouter la classe à l'élément
+    item.classList.add(className);
+    // Si iconType est fourni, mettre à jour les classes de l'icône
+    if (iconType) {
+      icon.classList.remove(PreferenceStyler.ORIGINAL_ICON);
+      icon.classList.add(iconType);
+    }
   }
 
   /**
